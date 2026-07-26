@@ -2,17 +2,22 @@ let firstNumberString = "";
 let operator = "";
 let secondNumberString = "";
 let isOperated = false;
+let hasOldResult = false;
+let isCalculated = false;
 const display = document.getElementById("display");
 
 function add(a, b) {
   return a + b;
 }
+
 function subtract(a, b) {
   return a - b;
 }
+
 function multiply(a, b) {
   return a * b;
 }
+
 function divide(a, b) {
   return a / b;
 }
@@ -20,8 +25,13 @@ function divide(a, b) {
 function operate(firstNumberString, operator, secondNumberString) {
   firstNumber = Number(firstNumberString);
   secondNumber = Number(secondNumberString);
+  let tempResult;
   if (operator == "÷") {
-    divide(firstNumber, secondNumber);
+    if ((secondNumber = 0)) {
+      display.textContent = "ERROR: You can't divide by 0!!";
+    } else {
+      tempResult = divide(firstNumber, secondNumber);
+    }
   } else if (operator == "x") {
     multiply(firstNumber, secondNumber);
   } else if (operator == "-") {
@@ -29,6 +39,11 @@ function operate(firstNumberString, operator, secondNumberString) {
   } else if (operator == "+") {
     add(firstNumber, secondNumber);
   }
+  const tempResultString = tempResult.toString().split(".");
+  if (tempResultString[1] && tempResultString[1].length > 2) {
+    return Number(tempResult.toFixed(2));
+  }
+  return tempResult;
 }
 
 const calculator = document.querySelector(".calculator");
@@ -39,39 +54,40 @@ calculator.addEventListener("click", (e) => {
   const parentClass = e.target.parentElement.classList;
 
   if (parentClass.contains("numbers")) {
-    // 🆕 If they type a number right after equals, start a fresh calculation
-    if (justHitEquals) {
-      firstNumberString = e.target.textContent;
-      display.textContent = firstNumberString;
-      clear();
-      return;
-    }
-
     if (!isOperated) {
       firstNumberString += e.target.textContent;
       display.textContent = firstNumberString;
+      console.log(firstNumberString);
     } else {
       secondNumberString += e.target.textContent;
       display.textContent = secondNumberString;
+      hasOldResult = true;
+      isCalculated = true;
       console.log(secondNumberString);
     }
+  } else if (parentClass.contains("operators") && hasOldResult) {
+    isOperated = true;
+    hasOldResult = false;
+    result = operate(firstNumberString, operator, secondNumberString);
+    operator = e.target.textContent;
+    firstNumberString = result;
+    display.textContent = firstNumberString;
+    secondNumberString = "";
   } else if (parentClass.contains("operators")) {
-    justHitEquals = false; // 🆕 Reset since they chose to continue with an operator
-
-    if (hasOldResult) {
-      result = operate(firstNumberString, operator, secondNumberString);
-      firstNumberString = result.toString();
-      display.textContent = firstNumberString;
-      secondNumberString = "";
-      hasOldResult = false;
-    }
-
     isOperated = true;
     operator = e.target.textContent;
     display.textContent = operator;
   } else if (parentClass.contains("equals")) {
-    isOperated = false;
-    operate(firstNumberString, operator, secondNumberString);
+    isOperated = true;
+    isCalculated = false;
+    hasOldResult = false;
+    result = operate(firstNumberString, operator, secondNumberString);
+    operator = e.target.textContent;
+    firstNumberString = result;
+    display.textContent = firstNumberString;
+    clear();
+  } else if (parentClass.contains("clear")) {
+    firstNumberString = "";
     clear();
   }
 });
@@ -80,8 +96,4 @@ function clear() {
   firstNumberString = "";
   operator = "";
   secondNumberString = "";
-  isOperated = false;
-  hasOldResult = false;
-  isCalculated = false;
-  justHitEquals = false;
 }
