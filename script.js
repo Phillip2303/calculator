@@ -118,9 +118,11 @@ calculator.addEventListener("click", (e) => {
     if (!isOperated) {
       firstNumberString = firstNumberString.slice(0, -1);
       display.textContent = firstNumberString;
+      hasDot = firstNumberString.includes(".");
     } else {
       secondNumberString = secondNumberString.slice(0, -1);
       display.textContent = secondNumberString;
+      hasDot = secondNumberString.includes(".");
     }
   } else if (parentClass.contains("clear")) {
     firstNumberString = "";
@@ -137,3 +139,30 @@ function clear() {
   hasOldResult = false;
   isCalculated = false;
 }
+
+// 🆕 KEYBOARD SUPPORT LISTENER
+window.addEventListener("keydown", (e) => {
+  // Prevent spacebar or Enter key from accidentally scrolling the page
+  if (e.key === "Enter" || e.key === " ") {
+    e.preventDefault();
+  }
+
+  let buttonText = e.key;
+
+  // Map keyboard characters to match your specific button text content
+  if (buttonText === "*") buttonText = "x";
+  if (buttonText === "/") buttonText = "÷";
+  if (buttonText === "Enter") buttonText = "=";
+  if (buttonText === "Escape") buttonText = "CLEAR";
+  if (buttonText === "Backspace") buttonText = "DELETE";
+
+  // Find all buttons on the page
+  const buttons = document.querySelectorAll("button");
+
+  // Look for the single button matching the key text and trigger its click event
+  buttons.forEach((btn) => {
+    if (btn.textContent.trim() === buttonText) {
+      btn.click();
+    }
+  });
+});
