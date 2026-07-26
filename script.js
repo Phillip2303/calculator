@@ -114,6 +114,14 @@ calculator.addEventListener("click", (e) => {
       isError = false;
     }
     clear();
+  } else if (parentClass.contains("delete")) {
+    if (!isOperated) {
+      firstNumberString = firstNumberString.slice(0, -1);
+      display.textContent = firstNumberString;
+    } else {
+      secondNumberString = secondNumberString.slice(0, -1);
+      display.textContent = secondNumberString;
+    }
   } else if (parentClass.contains("clear")) {
     firstNumberString = "";
     clear();
