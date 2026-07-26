@@ -5,6 +5,9 @@ let result = 0;
 let isOperated = false;
 let hasOldResult = false;
 let isCalculated = false;
+let hasDot = false;
+let isError = false;
+
 const display = document.getElementById("display");
 
 function add(a, b) {
@@ -28,8 +31,9 @@ function operate(firstNumberString, operator, secondNumberString) {
   secondNumber = Number(secondNumberString);
   let tempResult;
   if (operator == "÷") {
-    if ((secondNumber = 0)) {
-      display.textContent = "ERROR: You can't divide by 0!!";
+    if (secondNumber === 0) {
+      isError = true;
+      return "ERROR: You can't divide by 0!!";
     } else {
       tempResult = divide(firstNumber, secondNumber);
     }
@@ -66,25 +70,49 @@ calculator.addEventListener("click", (e) => {
       isCalculated = true;
       console.log(secondNumberString);
     }
+  } else if (parentClass.contains("dot") && !hasDot) {
+    if (!isOperated) {
+      if (!firstNumberString.toString().includes(".")) {
+        firstNumberString += e.target.textContent;
+        display.textContent = firstNumberString;
+        hasDot = true;
+      }
+    } else {
+      secondNumberString += e.target.textContent;
+      display.textContent = secondNumberString;
+      hasDot = true;
+    }
   } else if (parentClass.contains("operators") && hasOldResult) {
     isOperated = true;
     hasOldResult = false;
     result = operate(firstNumberString, operator, secondNumberString);
     operator = e.target.textContent;
-    firstNumberString = result;
+    firstNumberString = result.toString();
     display.textContent = firstNumberString;
-    secondNumberString = "";
+    if (isError) {
+      firstNumberString = "";
+      clear();
+      isError = false;
+    } else {
+      secondNumberString = "";
+      hasDot = false;
+    }
   } else if (parentClass.contains("operators")) {
     isOperated = true;
     operator = e.target.textContent;
+    hasDot = false;
   } else if (parentClass.contains("equals")) {
     isOperated = true;
     isCalculated = false;
     hasOldResult = false;
     result = operate(firstNumberString, operator, secondNumberString);
     operator = e.target.textContent;
-    firstNumberString = result;
+    firstNumberString = result.toString();
     display.textContent = firstNumberString;
+    if (isError) {
+      firstNumberString = "";
+      isError = false;
+    }
     clear();
   } else if (parentClass.contains("clear")) {
     firstNumberString = "";
@@ -96,4 +124,8 @@ calculator.addEventListener("click", (e) => {
 function clear() {
   operator = "";
   secondNumberString = "";
+  hasDot = false;
+  isOperated = false;
+  hasOldResult = false;
+  isCalculated = false;
 }
