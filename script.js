@@ -1,6 +1,7 @@
 let firstNumberString = "";
 let operator = "";
 let secondNumberString = "";
+let result = 0;
 let isOperated = false;
 let hasOldResult = false;
 let isCalculated = false;
@@ -33,11 +34,11 @@ function operate(firstNumberString, operator, secondNumberString) {
       tempResult = divide(firstNumber, secondNumber);
     }
   } else if (operator == "x") {
-    multiply(firstNumber, secondNumber);
+    tempResult = multiply(firstNumber, secondNumber);
   } else if (operator == "-") {
-    subtract(firstNumber, secondNumber);
+    tempResult = subtract(firstNumber, secondNumber);
   } else if (operator == "+") {
-    add(firstNumber, secondNumber);
+    tempResult = add(firstNumber, secondNumber);
   }
   const tempResultString = tempResult.toString().split(".");
   if (tempResultString[1] && tempResultString[1].length > 2) {
@@ -76,7 +77,6 @@ calculator.addEventListener("click", (e) => {
   } else if (parentClass.contains("operators")) {
     isOperated = true;
     operator = e.target.textContent;
-    display.textContent = operator;
   } else if (parentClass.contains("equals")) {
     isOperated = true;
     isCalculated = false;
@@ -89,11 +89,11 @@ calculator.addEventListener("click", (e) => {
   } else if (parentClass.contains("clear")) {
     firstNumberString = "";
     clear();
+    display.textContent = "";
   }
 });
 
 function clear() {
-  firstNumberString = "";
   operator = "";
   secondNumberString = "";
 }
