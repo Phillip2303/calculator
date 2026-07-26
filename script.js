@@ -1,12 +1,7 @@
 let firstNumberString = "";
 let operator = "";
 let secondNumberString = "";
-let result = 0;
 let isOperated = false;
-let hasOldResult = false;
-let isCalculated = false;
-let justHitEquals = false; // 🆕 Track if the last action was '='
-
 const display = document.getElementById("display");
 
 function add(a, b) {
@@ -23,32 +18,17 @@ function divide(a, b) {
 }
 
 function operate(firstNumberString, operator, secondNumberString) {
-  let firstNumber = Number(firstNumberString);
-  let secondNumber = Number(secondNumberString);
-  let tempResult;
-
-  if (!operator) return firstNumber; // Safety check
-
+  firstNumber = Number(firstNumberString);
+  secondNumber = Number(secondNumberString);
   if (operator == "÷") {
-    if (secondNumber === 0) {
-      return "ERROR: Can't divide by 0!!";
-    } else {
-      tempResult = divide(firstNumber, secondNumber);
-    }
+    divide(firstNumber, secondNumber);
   } else if (operator == "x") {
-    tempResult = multiply(firstNumber, secondNumber);
+    multiply(firstNumber, secondNumber);
   } else if (operator == "-") {
-    tempResult = subtract(firstNumber, secondNumber);
+    subtract(firstNumber, secondNumber);
   } else if (operator == "+") {
-    tempResult = add(firstNumber, secondNumber);
+    add(firstNumber, secondNumber);
   }
-
-  // Rounding logic
-  const tempResultString = tempResult.toString().split(".");
-  if (tempResultString[1] && tempResultString[1].length > 2) {
-    return Number(tempResult.toFixed(2));
-  }
-  return tempResult;
 }
 
 const calculator = document.querySelector(".calculator");
@@ -73,8 +53,7 @@ calculator.addEventListener("click", (e) => {
     } else {
       secondNumberString += e.target.textContent;
       display.textContent = secondNumberString;
-      hasOldResult = true;
-      isCalculated = true;
+      console.log(secondNumberString);
     }
   } else if (parentClass.contains("operators")) {
     justHitEquals = false; // 🆕 Reset since they chose to continue with an operator
@@ -89,23 +68,16 @@ calculator.addEventListener("click", (e) => {
 
     isOperated = true;
     operator = e.target.textContent;
+    display.textContent = operator;
   } else if (parentClass.contains("equals")) {
-    // Only calculate if we actually have an operator and a second number
-    if (operator && secondNumberString !== "") {
-      result = operate(firstNumberString, operator, secondNumberString);
-      display.textContent = result;
-      firstNumberString = result.toString(); // Save result as the first number
-      clear();
-      justHitEquals = true; // 🆕 Mark that we just calculated
-    }
-  } else if (parentClass.contains("clear")) {
-    firstNumberString = "";
+    isOperated = false;
+    operate(firstNumberString, operator, secondNumberString);
     clear();
-    display.textContent = "";
   }
 });
 
 function clear() {
+  firstNumberString = "";
   operator = "";
   secondNumberString = "";
   isOperated = false;
